@@ -316,8 +316,8 @@ int main(int argc, char * argv[]) {
                             int angle_value = (int)(angle * angle_compensate_multiple);
                             if ((angle_value - angle_compensate_offset) < 0) angle_compensate_offset = angle_value;
                             for (j = 0; j < angle_compensate_multiple; j++) {
-								// Clamp the index as it can overflow...
-								int compensate_index = std::clamp(angle_value - angle_compensate_offset + j, 0, angle_compensate_nodes_count - 1);
+                                // Clamp the index as it can overflow...
+                                int compensate_index = std::clamp(angle_value - angle_compensate_offset + j, 0, angle_compensate_nodes_count - 1);
                                 angle_compensate_nodes[compensate_index] = nodes[i];
                             }
                         }
