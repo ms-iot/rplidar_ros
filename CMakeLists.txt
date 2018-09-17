@@ -1,13 +1,25 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rplidar_ros)
 
+if (NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
 set(RPLIDAR_SDK_PATH "./sdk/")
 
-FILE(GLOB RPLIDAR_SDK_SRC 
-  "${RPLIDAR_SDK_PATH}/src/arch/linux/*.cpp"
-  "${RPLIDAR_SDK_PATH}/src/hal/*.cpp"
-  "${RPLIDAR_SDK_PATH}/src/*.cpp"
-)
+if (NOT MSVC)
+  FILE(GLOB RPLIDAR_SDK_SRC 
+    "${RPLIDAR_SDK_PATH}/src/arch/linux/*.cpp"
+    "${RPLIDAR_SDK_PATH}/src/hal/*.cpp"
+    "${RPLIDAR_SDK_PATH}/src/*.cpp"
+  )
+else()
+  FILE(GLOB RPLIDAR_SDK_SRC 
+    "${RPLIDAR_SDK_PATH}/src/arch/win32/*.cpp"
+    "${RPLIDAR_SDK_PATH}/src/hal/*.cpp"
+    "${RPLIDAR_SDK_PATH}/src/*.cpp"
+  )
+endif()
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp

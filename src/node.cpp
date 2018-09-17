@@ -41,6 +41,11 @@
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
+#ifdef WIN32
+#define _USE_MATH_DEFINES
+#include <math.h>
+#endif
+
 #define DEG2RAD(x) ((x)*M_PI/180.)
 
 using namespace rp::standalone::rplidar;
@@ -300,7 +305,8 @@ int main(int argc, char * argv[]) {
                     //const int angle_compensate_multiple = 1;
                     const int angle_compensate_nodes_count = 360*angle_compensate_multiple;
                     int angle_compensate_offset = 0;
-                    rplidar_response_measurement_node_hq_t angle_compensate_nodes[angle_compensate_nodes_count];
+                    rplidar_response_measurement_node_hq_t *angle_compensate_nodes = 
+                        new rplidar_response_measurement_node_hq_t [angle_compensate_nodes_count];
                     memset(angle_compensate_nodes, 0, angle_compensate_nodes_count*sizeof(rplidar_response_measurement_node_hq_t));
 
                     int i = 0, j = 0;
@@ -310,7 +316,9 @@ int main(int argc, char * argv[]) {
                             int angle_value = (int)(angle * angle_compensate_multiple);
                             if ((angle_value - angle_compensate_offset) < 0) angle_compensate_offset = angle_value;
                             for (j = 0; j < angle_compensate_multiple; j++) {
-                                angle_compensate_nodes[angle_value-angle_compensate_offset+j] = nodes[i];
+                                // Clamp the index as it can overflow...
+                                int compensate_index = std::clamp(angle_value - angle_compensate_offset + j, 0, angle_compensate_nodes_count - 1);
+                                angle_compensate_nodes[compensate_index] = nodes[i];
                             }
                         }
                     }
@@ -319,6 +327,8 @@ int main(int argc, char * argv[]) {
                              start_scan_time, scan_duration, inverted,
                              angle_min, angle_max, max_distance,
                              frame_id);
+
+                    delete(angle_compensate_nodes);					
                 } else {
                     int start_node = 0, end_node = 0;
                     int i = 0;
