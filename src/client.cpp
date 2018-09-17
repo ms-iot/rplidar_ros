@@ -38,6 +38,11 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 
+#ifdef WIN32
+#define _USE_MATH_DEFINES
+#include <math.h>
+#endif
+
 #define RAD2DEG(x) ((x)*180./M_PI)
 
 void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
